@@ -57,19 +57,57 @@ Documents are structured for optimal retrieval:
 
 ## Usage
 
-### Activating the Skill
+### Quick Start with /kthis
 
-In Claude Code, invoke the skill using the Skill command:
+The fastest way to save content is using the `/kthis` command:
+
+```
+/kthis
+
+[Then paste content, provide file path, URL, etc.]
+```
+
+This automatically activates the doc-copy skill and processes whatever you provide next.
+
+### Alternative: Full Skill Invocation
+
+You can also invoke the skill directly:
 
 ```
 /skill doc-copy
 ```
 
-or simply say:
+or say:
 
 ```
 Use the doc-copy skill to process this document
 ```
+
+### Managing Multiple Knowledge Repositories
+
+Create and manage separate knowledge repositories with `/krepo`:
+
+**Create a new repository:**
+```
+/krepo create Cam
+```
+
+**List all repositories:**
+```
+/krepo list
+```
+
+**Switch between repositories:**
+```
+/krepo switch Cam
+```
+
+**Show current repository:**
+```
+/krepo current
+```
+
+All content saved with `/kthis` will go to the currently active repository.
 
 ### Processing Content
 
@@ -179,7 +217,9 @@ Claude:
 
 ## Output Structure
 
-Processed documents are saved to:
+### Default Repository
+
+By default, processed documents are saved to:
 ```
 docs/
 ├── imported/
@@ -190,6 +230,35 @@ docs/
 │   └── other/           # Miscellaneous documents
 └── index.md            # Catalog of all processed documents (optional)
 ```
+
+### Multiple Repositories
+
+When you create additional repositories with `/krepo create NAME`, the structure is:
+```
+ClaudeSkill/
+├── docs/imported/       # Default repository
+├── krepos/
+│   ├── Cam/
+│   │   ├── README.md
+│   │   └── docs/imported/
+│   │       ├── articles/
+│   │       ├── reports/
+│   │       ├── guides/
+│   │       ├── references/
+│   │       └── other/
+│   └── Work/
+│       ├── README.md
+│       └── docs/imported/
+│           ├── articles/
+│           ├── reports/
+│           ├── guides/
+│           ├── references/
+│           └── other/
+└── .claude/
+    └── krepos.json      # Repository configuration
+```
+
+Each repository is completely independent, allowing you to organize content by project, person, or topic.
 
 ### File Naming Convention
 - Format: `YYYY-MM-DD-descriptive-title.md`

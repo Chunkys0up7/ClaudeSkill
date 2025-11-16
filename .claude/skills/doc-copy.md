@@ -18,6 +18,31 @@ This skill processes ALL types of content:
 
 When a user provides ANY content (file, pasted text, URL, generated content), follow these steps:
 
+### 0. Determine Target Repository
+
+**FIRST**, check which knowledge repository to use:
+
+1. **Read the configuration file** `.claude/krepos.json`
+2. **Identify the active repo** from the "active" field
+3. **Get the repo path** from the repos object
+4. **Use this path** as the base directory for saving documents
+
+Example config:
+```json
+{
+  "active": "Cam",
+  "repos": {
+    "default": {"path": "docs/imported", ...},
+    "Cam": {"path": "krepos/Cam/docs/imported", ...}
+  }
+}
+```
+
+If active is "Cam", save documents to `krepos/Cam/docs/imported/{category}/...`
+If active is "default", save documents to `docs/imported/{category}/...`
+
+**If config file doesn't exist or can't be read**: Default to `docs/imported`
+
 ### 1. Content Ingestion
 
 **For Uploaded Files:**
@@ -271,7 +296,7 @@ docs/
   - Code snippet: `2025-11-16-python-data-processing-function.md`
 
 **File Placement:**
-- Save to `docs/imported/{doc_type}/` directory
+- Save to `{active_repo_path}/{doc_type}/` directory (where {active_repo_path} comes from step 0)
 - Choose appropriate category based on content:
   - `articles/`: Blog posts, articles, essays, pasted web content
   - `reports/`: Research, analysis, data reports
@@ -279,6 +304,9 @@ docs/
   - `references/`: API docs, specs, lookup materials, code examples
   - `other/`: Conversations, mixed content, uncategorized
 - Create subdirectories if needed for organization
+- Example paths:
+  - If active repo is "default": `docs/imported/articles/2025-11-16-title.md`
+  - If active repo is "Cam": `krepos/Cam/docs/imported/articles/2025-11-16-title.md`
 
 ### 6. Git Commit and Push
 
@@ -298,12 +326,13 @@ After creating the markdown file:
 ### 7. Completion Report
 
 After processing, provide the user with:
-- Location of the saved file
-- Summary of extracted metadata
-- Word count and page count
-- Any conversion notes or limitations
-- Git commit hash
-- Suggestions for related documents or further processing
+- **Active repository**: Which knowledge repo was used (e.g., "Saved to 'Cam' repository")
+- **Location of the saved file**: Full path to the markdown file
+- **Summary of extracted metadata**: Key topics, keywords, document type
+- **Word count and page count**
+- **Any conversion notes or limitations**
+- **Git commit hash**
+- **Suggestions** for related documents or further processing
 
 ## RAG Optimization Best Practices
 

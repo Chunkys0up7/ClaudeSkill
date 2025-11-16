@@ -8,13 +8,34 @@ Ensure the skill is properly installed:
 
 ```bash
 ls -la .claude/skills/doc-copy.md
+ls -la .claude/commands/kthis.md
+ls -la .claude/commands/krepo.md
 ```
 
-You should see the skill file. If not, ensure you've cloned the repository correctly.
+You should see all three files. If not, ensure you've cloned the repository correctly.
 
-## Step 2: Activate the Skill
+## Step 2: Save Your First Content (Fastest Method)
 
-In Claude Code, invoke the skill:
+The quickest way to save content:
+
+```
+/kthis
+
+[Then provide your content - paste text, file path, URL, etc.]
+```
+
+That's it! The `/kthis` command activates the skill and processes your content in one step.
+
+**Example:**
+```
+/kthis
+
+https://example.com/great-article
+```
+
+## Step 2 Alternative: Full Skill Invocation
+
+You can also use the traditional method:
 
 ```
 Use the doc-copy skill
@@ -26,7 +47,30 @@ or
 /skill doc-copy
 ```
 
-## Step 3: Process Your First Content
+## Step 3 (Optional): Create Separate Knowledge Repositories
+
+Want to organize content by project or person? Create separate repos:
+
+**Create a new repository:**
+```
+/krepo create Cam
+```
+
+**Switch between repositories:**
+```
+/krepo switch Cam
+```
+
+**List all repositories:**
+```
+/krepo list
+```
+
+Now when you use `/kthis`, content will be saved to the "Cam" repository!
+
+## Step 4: Content Examples
+
+Here's what you can save with `/kthis`:
 
 The skill handles ANY type of content - not just files! Here are examples:
 
@@ -323,8 +367,26 @@ After processing, you can ask Claude to:
 Update the metadata for docs/imported/guides/2025-11-16-api-guide.md to add more keywords related to authentication
 ```
 
-### 5. Organize by Project
-Use the category directories effectively:
+### 5. Organize by Project or Person
+Use multiple repositories for better organization:
+```
+/krepo create Work
+/krepo create Personal
+/krepo create Research
+```
+
+Then switch between them:
+```
+/krepo switch Work
+/kthis
+[Add work-related content]
+
+/krepo switch Personal
+/kthis
+[Add personal content]
+```
+
+Each repo has the same category structure:
 - `articles/` - Blog posts, news, updates
 - `reports/` - Research, analysis, whitepapers
 - `guides/` - Tutorials, how-tos, documentation
@@ -395,23 +457,49 @@ Process this document and provide detailed descriptions of all diagrams: ~/Docs/
 4. **Build automation** to process documents automatically
 5. **Share your processed knowledge base** with your team
 
-## Example Workflow: Complete Document Pipeline
+## Example Workflow: Complete Multi-Repo Pipeline
 
+**Scenario:** You want separate knowledge bases for Work and Personal content.
+
+```
+# Step 1: Set up repositories
+/krepo create Work
+/krepo create Personal
+
+# Step 2: Add work content
+/krepo switch Work
+
+/kthis
+~/Documents/work/api-spec.pdf
+
+/kthis
+https://company-blog.com/new-feature
+
+/kthis
+[Paste meeting notes...]
+
+# Step 3: Add personal content
+/krepo switch Personal
+
+/kthis
+~/Downloads/recipe.pdf
+
+/kthis
+https://interesting-blog.com/article
+
+# Step 4: Check what you've saved
+/krepo list
+
+# Step 5: Review the outputs
 ```bash
-# Step 1: Collect documents
-mkdir ~/Documents/to-process
+ls krepos/Work/docs/imported/*/
+ls krepos/Personal/docs/imported/*/
+```
 
-# Step 2: In Claude Code, process them
-"Use the doc-copy skill to process all PDFs in ~/Documents/to-process"
+# Step 6: Load into your RAG system
+# Each repo can feed a different vector database or namespace
 
-# Step 3: Review the output
-ls docs/imported/*/
-
-# Step 4: Load into your RAG system
-# (Use your preferred vector database loader)
-
-# Step 5: Query your knowledge base
-# (Use your RAG application)
+# Step 7: Query your knowledge bases separately or together
 ```
 
 ## Support

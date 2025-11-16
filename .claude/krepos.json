@@ -1,0 +1,11 @@
+{
+  "active": "default",
+  "repos": {
+    "default": {
+      "name": "default",
+      "path": "docs/imported",
+      "description": "Default knowledge repository",
+      "created": "2025-11-16"
+    }
+  }
+}
