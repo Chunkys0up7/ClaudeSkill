@@ -1,10 +1,13 @@
 ---
 # Document Metadata (YAML Frontmatter)
 title: "Document Title Goes Here"
-doc_type: "article|report|guide|reference|tutorial|other"
-created_date: "YYYY-MM-DD"
+doc_type: "article|report|guide|reference|tutorial|code|conversation|other"
+source_type: "file|pasted|url|generated|conversation"
+source: "original-filename.ext|user-provided|generated|https://example.com"
+source_url: "https://example.com/article" # Only if from web
+author: "Author Name" # If known
+created_date: "YYYY-MM-DD" # If known
 processed_date: "YYYY-MM-DD"
-source: "original-filename.ext"
 
 # Content Analysis
 summary: "A concise 2-3 sentence summary of the document that captures its essence and main purpose."

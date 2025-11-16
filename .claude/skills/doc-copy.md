@@ -1,15 +1,45 @@
 # Document Copy and RAG Optimization Skill
 
-You are a specialized document processing assistant. Your task is to convert uploaded documents into RAG-optimized markdown files with rich metadata enrichment.
+You are a specialized document processing assistant. Your task is to convert ANY content into RAG-optimized markdown files with rich metadata enrichment.
+
+## Supported Content Types
+
+This skill processes ALL types of content:
+
+1. **Uploaded Files**: PDFs, images, CSV, text files, Jupyter notebooks, DOCX
+2. **Pasted Content**: Text, code, articles copied into the chat
+3. **Generated Content**: Claude-generated content, AI outputs, responses
+4. **Web Content**: URLs, web pages, online articles
+5. **Code Snippets**: Code blocks, scripts, configurations
+6. **Chat Conversations**: Saved conversations, Q&A exchanges
+7. **Mixed Content**: Any combination of the above
 
 ## Process Overview
 
-When a user uploads or references a document, follow these steps:
+When a user provides ANY content (file, pasted text, URL, generated content), follow these steps:
 
-### 1. Document Ingestion
+### 1. Content Ingestion
+
+**For Uploaded Files:**
 - Use the **Read** tool to access the document file
 - Supported formats: PDF, images (PNG, JPG), CSV, TXT, DOCX, Jupyter notebooks, and more
 - Claude Code's Read tool can natively read PDFs (extracting text and visuals), images, CSVs, and other formats
+
+**For Pasted/Copied Content:**
+- Accept content directly from user's message
+- Can be plain text, formatted text, code, markdown, or mixed content
+- Preserve original formatting and structure
+
+**For URLs:**
+- Use **WebFetch** tool to retrieve web content
+- Extract main content from HTML
+- Preserve article structure and headings
+- Note the source URL for metadata
+
+**For Generated Content:**
+- Accept Claude's own generated content or outputs
+- Can be from current conversation or previous sessions
+- Include generation context in metadata
 
 ### 2. Content Extraction and Conversion
 
@@ -30,9 +60,45 @@ When a user uploads or references a document, follow these steps:
 - Analyze column headers and data types
 - Provide statistical summary if relevant (row count, key columns)
 
+**For Pasted Text:**
+- Identify the content type (article, code, conversation, documentation, etc.)
+- Parse and structure content with appropriate headers
+- Preserve code formatting with proper syntax highlighting
+- Convert lists, tables, and other structures to markdown
+- Maintain emphasis, bold, italics, and other formatting
+
+**For URLs/Web Content:**
+- Extract article title, author, publication date
+- Convert HTML content to clean markdown
+- Preserve article structure (intro, sections, conclusion)
+- Extract and describe images
+- Note source URL and retrieval date
+- Handle different content types (blog posts, documentation, news articles, etc.)
+
+**For Code Snippets:**
+- Identify programming language
+- Add proper syntax highlighting markers
+- Structure with explanatory comments
+- Include usage examples if applicable
+- Document dependencies and requirements
+
+**For Generated Content:**
+- Structure with clear sections
+- Add context about generation (date, purpose, conversation context)
+- Format code, data, or text appropriately
+- Preserve original intent and structure
+
+**For Chat Conversations:**
+- Structure as Q&A format
+- Preserve speaker attribution
+- Extract key insights and learnings
+- Create summary of main topics discussed
+- Format code examples and technical content properly
+
 **For Other formats:**
 - Extract and structure content appropriately
 - Preserve formatting where possible
+- Infer content type and structure accordingly
 
 ### 3. Metadata Enrichment (Critical for RAG)
 
@@ -40,10 +106,13 @@ Analyze the document content and extract/generate:
 
 **Core Metadata:**
 - `title`: Document title (extracted or generated)
-- `doc_type`: Type of document (article, report, guide, reference, tutorial, etc.)
-- `created_date`: Original document date if available
+- `doc_type`: Type of document (article, report, guide, reference, tutorial, code, conversation, etc.)
+- `source_type`: Origin of content (file, pasted, url, generated, conversation)
+- `source`: Original filename, URL, or "user-provided" / "generated"
+- `source_url`: If from web, the original URL
+- `created_date`: Original content date if available
 - `processed_date`: Current date (YYYY-MM-DD format)
-- `source`: Original filename and format
+- `author`: Original author if known
 
 **Content Analysis:**
 - `summary`: Concise 2-3 sentence summary of the document
@@ -76,10 +145,13 @@ Create a well-structured markdown file:
 ---
 # Document Metadata (YAML Frontmatter)
 title: "Document Title"
-doc_type: "article"
-created_date: "YYYY-MM-DD"
+doc_type: "article|report|guide|reference|tutorial|code|conversation"
+source_type: "file|pasted|url|generated|conversation"
+source: "filename.pdf|user-provided|generated|https://example.com/article"
+source_url: "https://example.com/article" # if applicable
+created_date: "YYYY-MM-DD" # if known
 processed_date: "YYYY-MM-DD"
-source: "filename.pdf"
+author: "Author Name" # if known
 
 # Content Analysis
 summary: "Brief summary of the document"
@@ -189,10 +261,23 @@ docs/
 **Naming Convention:**
 - Use lowercase with hyphens
 - Include date prefix: `YYYY-MM-DD-descriptive-title.md`
-- Example: `2025-11-16-api-security-best-practices.md`
+- Generate descriptive titles based on content if not provided
+- Examples:
+  - File: `2025-11-16-api-security-best-practices.md`
+  - Pasted article: `2025-11-16-machine-learning-fundamentals.md`
+  - URL: `2025-11-16-react-hooks-guide.md`
+  - Generated code: `2025-11-16-database-schema-migration.md`
+  - Conversation: `2025-11-16-rag-optimization-discussion.md`
+  - Code snippet: `2025-11-16-python-data-processing-function.md`
 
 **File Placement:**
 - Save to `docs/imported/{doc_type}/` directory
+- Choose appropriate category based on content:
+  - `articles/`: Blog posts, articles, essays, pasted web content
+  - `reports/`: Research, analysis, data reports
+  - `guides/`: Tutorials, how-tos, step-by-step instructions
+  - `references/`: API docs, specs, lookup materials, code examples
+  - `other/`: Conversations, mixed content, uncategorized
 - Create subdirectories if needed for organization
 
 ### 6. Git Commit and Push
@@ -238,18 +323,84 @@ To maximize RAG performance:
 - If metadata extraction is uncertain, use "unknown" or empty arrays rather than guessing
 - If Git operations fail after retries, inform user and provide manual instructions
 
-## Example Invocation
+## Example Invocations
 
+### Example 1: Uploaded File
 User: "Process this PDF: /path/to/document.pdf"
 
 You should:
-1. Read the PDF file
+1. Read the PDF file using Read tool
 2. Extract and convert all content
-3. Analyze and generate metadata
+3. Analyze and generate metadata (source_type: "file")
 4. Create structured markdown with YAML frontmatter
 5. Save to appropriate directory
 6. Commit and push to Git
 7. Provide completion report
+
+### Example 2: Pasted Content
+User: "Save this article I found:
+[User pastes a long article text]"
+
+You should:
+1. Accept the pasted content directly from the message
+2. Analyze content type and structure
+3. Generate title based on content
+4. Generate metadata (source_type: "pasted", source: "user-provided")
+5. Create structured markdown
+6. Save to appropriate directory (likely articles/ or other/)
+7. Commit and push to Git
+
+### Example 3: URL/Web Content
+User: "Save this blog post: https://example.com/great-article"
+
+You should:
+1. Use WebFetch to retrieve the web content
+2. Extract title, author, date from the page
+3. Convert HTML to markdown
+4. Generate metadata (source_type: "url", source_url: "https://...")
+5. Create structured markdown
+6. Save to appropriate directory
+7. Commit and push to Git
+
+### Example 4: Generated Content
+User: "Save the code you just generated to the repository"
+
+You should:
+1. Take the previously generated code/content
+2. Structure it appropriately
+3. Add context about what it does
+4. Generate metadata (source_type: "generated", source: "claude-generated")
+5. Create structured markdown with code blocks
+6. Save to appropriate directory (likely guides/ or references/)
+7. Commit and push to Git
+
+### Example 5: Code Snippet
+User: "Save this Python function:
+```python
+def hello_world():
+    print('Hello!')
+```"
+
+You should:
+1. Accept the code snippet
+2. Identify language and purpose
+3. Add documentation and usage examples
+4. Generate metadata (source_type: "pasted", has_code: true)
+5. Create structured markdown
+6. Save to appropriate directory
+7. Commit and push to Git
+
+### Example 6: Chat Conversation
+User: "Save our conversation about RAG optimization"
+
+You should:
+1. Structure the conversation in Q&A format
+2. Extract key insights and learnings
+3. Organize by topics discussed
+4. Generate metadata (source_type: "conversation")
+5. Create structured markdown
+6. Save to appropriate directory
+7. Commit and push to Git
 
 ## Quality Checklist
 

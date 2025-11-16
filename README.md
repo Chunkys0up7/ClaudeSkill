@@ -1,20 +1,21 @@
 # Claude Document Processing Skill
 
-A comprehensive Claude Skill for converting documents into RAG-optimized markdown files with rich metadata enrichment.
+A comprehensive Claude Skill for converting ANY content into RAG-optimized markdown files with rich metadata enrichment.
 
 ## Overview
 
-This skill enables Claude to process various document formats and convert them into well-structured, searchable markdown files optimized for Retrieval Augmented Generation (RAG) systems. The skill automatically enriches documents with comprehensive metadata, making them perfect for vector databases, knowledge bases, and semantic search systems.
+This skill enables Claude to process ANY type of content - uploaded files, pasted text, URLs, generated content, code snippets, or conversations - and convert them into well-structured, searchable markdown files optimized for Retrieval Augmented Generation (RAG) systems. The skill automatically enriches all content with comprehensive metadata, making it perfect for vector databases, knowledge bases, and semantic search systems.
 
 ## Features
 
-### Document Format Support
-- **PDF files**: Full text extraction with image and chart descriptions
-- **Images**: Visual analysis with detailed descriptions (PNG, JPG, etc.)
-- **CSV files**: Conversion to markdown tables with statistical summaries
-- **Text files**: Structured formatting and metadata extraction
-- **Jupyter notebooks**: Full cell extraction with outputs
-- **Other formats**: DOCX and various document types
+### Universal Content Support
+- **Uploaded Files**: PDF, images (PNG, JPG), CSV, text files, Jupyter notebooks, DOCX
+- **Pasted Content**: Articles, documentation, text copied into chat
+- **Web Content**: URLs, blog posts, online articles, documentation pages
+- **Generated Content**: Claude-generated code, responses, analysis
+- **Code Snippets**: Code blocks, scripts, configurations, functions
+- **Chat Conversations**: Saved discussions, Q&A exchanges, learning sessions
+- **Mixed Content**: Any combination of the above
 
 ### Intelligent Conversion
 - Preserves document structure and hierarchy
@@ -70,31 +71,57 @@ or simply say:
 Use the doc-copy skill to process this document
 ```
 
-### Processing a Document
+### Processing Content
 
-Once the skill is active, provide the document to process:
+Once the skill is active, provide ANY type of content to process:
 
-**Option 1: Direct file path**
+**Option 1: Uploaded Files**
 ```
 Process this PDF: /path/to/document.pdf
+Process this image: ~/screenshots/architecture-diagram.png
+Process this data: ~/data/sales-report.csv
 ```
 
-**Option 2: Upload/attach document**
+**Option 2: Pasted/Copied Content**
 ```
-I've uploaded a document. Please process it.
+Save this article I found:
+
+[Paste your content here - can be text, code, documentation, etc.]
 ```
 
-**Option 3: Specify document with context**
+**Option 3: Web URLs**
 ```
-Convert this research paper to markdown and optimize it for RAG: /path/to/research-paper.pdf
+Save this blog post: https://example.com/great-article
+Process this documentation: https://docs.example.com/api-guide
 ```
 
-### Example Workflow
+**Option 4: Generated Content**
+```
+Save the code you just generated
+Save your previous response as a guide
+Document the solution we just created
+```
 
+**Option 5: Code Snippets**
+```
+Save this Python function:
+```python
+def process_data(data):
+    return data.transform()
+```
+```
+
+**Option 6: Conversations**
+```
+Save our conversation about microservices architecture
+Document this Q&A session
+```
+
+### Example Workflows
+
+**Workflow 1: Uploaded PDF**
 ```
 User: Use the doc-copy skill
-Claude: [Activates doc-copy skill]
-
 User: Process this PDF: ~/Downloads/api-security-guide.pdf
 
 Claude:
@@ -106,6 +133,48 @@ Claude:
 6. Saves to docs/imported/guides/2025-11-16-api-security-guide.md
 7. Commits and pushes to Git
 8. Provides completion report
+```
+
+**Workflow 2: Pasted Article**
+```
+User: Use the doc-copy skill
+User: Save this article:
+[User pastes long article about machine learning]
+
+Claude:
+1. Analyzes the pasted content
+2. Generates appropriate title and metadata
+3. Structures content with proper headers
+4. Saves to docs/imported/articles/2025-11-16-machine-learning-intro.md
+5. Commits and pushes to Git
+```
+
+**Workflow 3: Web URL**
+```
+User: Use the doc-copy skill
+User: Save this: https://react.dev/learn/hooks
+
+Claude:
+1. Fetches content from URL
+2. Converts HTML to markdown
+3. Extracts author, date, title
+4. Generates metadata
+5. Saves to docs/imported/guides/2025-11-16-react-hooks-guide.md
+6. Commits and pushes to Git
+```
+
+**Workflow 4: Generated Code**
+```
+User: [After Claude generates some code]
+User: Use the doc-copy skill
+User: Save that database migration script
+
+Claude:
+1. Takes the previously generated code
+2. Adds documentation and usage examples
+3. Generates metadata
+4. Saves to docs/imported/references/2025-11-16-database-migration.md
+5. Commits and pushes to Git
 ```
 
 ## Output Structure
@@ -209,11 +278,14 @@ The generated markdown files are optimized for RAG systems:
 ## Metadata Fields Reference
 
 ### Core Metadata
-- `title`: Document title
-- `doc_type`: article, report, guide, reference, tutorial, other
-- `created_date`: Original document date
+- `title`: Document title (extracted or generated)
+- `doc_type`: article, report, guide, reference, tutorial, code, conversation, other
+- `source_type`: file, pasted, url, generated, conversation
+- `source`: Original filename, URL, or "user-provided"/"generated"
+- `source_url`: Original URL if from web
+- `author`: Original author if known
+- `created_date`: Original content date
 - `processed_date`: Date of conversion
-- `source`: Original filename and format
 
 ### Content Analysis
 - `summary`: 2-3 sentence summary

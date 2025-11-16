@@ -26,9 +26,11 @@ or
 /skill doc-copy
 ```
 
-## Step 3: Process Your First Document
+## Step 3: Process Your First Content
 
-### Example 1: Process a PDF
+The skill handles ANY type of content - not just files! Here are examples:
+
+### Example 1: Process a PDF (Uploaded File)
 
 ```
 Process this PDF: ~/Documents/my-research-paper.pdf
@@ -42,7 +44,83 @@ Claude will:
 5. ✅ Save to `docs/imported/reports/YYYY-MM-DD-my-research-paper.md`
 6. ✅ Commit and push to Git
 
-### Example 2: Process an Image
+### Example 2: Process Pasted Content
+
+```
+Save this article I found:
+
+[Paste any content here - article, documentation, text, etc.]
+```
+
+Claude will:
+1. ✅ Analyze the pasted content
+2. ✅ Generate appropriate title
+3. ✅ Structure with proper headers
+4. ✅ Generate comprehensive metadata
+5. ✅ Save to `docs/imported/articles/YYYY-MM-DD-[generated-title].md`
+
+### Example 3: Process a Web URL
+
+```
+Save this blog post: https://example.com/great-article
+```
+
+Claude will:
+1. ✅ Fetch content from the URL
+2. ✅ Convert HTML to markdown
+3. ✅ Extract title, author, date
+4. ✅ Generate metadata (includes source URL)
+5. ✅ Save to `docs/imported/articles/YYYY-MM-DD-great-article.md`
+
+### Example 4: Process Generated Content
+
+```
+Save the code you just generated
+```
+
+or
+
+```
+Document the solution we just created
+```
+
+Claude will:
+1. ✅ Take the previously generated content
+2. ✅ Add documentation and context
+3. ✅ Structure appropriately
+4. ✅ Generate metadata
+5. ✅ Save to appropriate directory
+
+### Example 5: Process a Code Snippet
+
+```
+Save this Python function:
+```python
+def analyze_data(df):
+    return df.groupby('category').sum()
+```
+```
+
+Claude will:
+1. ✅ Identify the programming language
+2. ✅ Add documentation and usage examples
+3. ✅ Generate metadata (has_code: true)
+4. ✅ Save to `docs/imported/references/YYYY-MM-DD-python-data-analysis.md`
+
+### Example 6: Process a Conversation
+
+```
+Save our conversation about Docker best practices
+```
+
+Claude will:
+1. ✅ Structure conversation as Q&A
+2. ✅ Extract key insights and learnings
+3. ✅ Organize by topics discussed
+4. ✅ Generate metadata
+5. ✅ Save to `docs/imported/other/YYYY-MM-DD-docker-best-practices-discussion.md`
+
+### Example 7: Process an Image (Screenshot/Diagram)
 
 ```
 Process this screenshot: ~/Pictures/architecture-diagram.png
@@ -55,7 +133,7 @@ Claude will:
 4. ✅ Generate metadata
 5. ✅ Save to `docs/imported/other/YYYY-MM-DD-architecture-diagram.md`
 
-### Example 3: Process a CSV File
+### Example 8: Process a CSV File
 
 ```
 Process this data: ~/Data/sales-report.csv
@@ -119,19 +197,70 @@ Use the extracted entities and relationships:
 
 ## Common Use Cases
 
-### Use Case 1: Building a Knowledge Base
+### Use Case 1: Building a Knowledge Base from Any Source
 
-Process all your documentation:
+Process documentation from multiple sources:
 
 ```
 Process all PDFs in ~/Documents/company-docs/
+Save this API guide: https://docs.example.com/api
+Save this internal document: [paste content]
 ```
 
-Result: Searchable, categorized knowledge base optimized for RAG.
+Result: Unified, searchable knowledge base from files, URLs, and pasted content.
 
-### Use Case 2: Research Paper Collection
+### Use Case 2: Capturing Web Content
 
-Convert academic papers to searchable format:
+Save valuable online content:
+
+```
+Save this tutorial: https://realpython.com/python-decorators/
+Save this Stack Overflow answer: https://stackoverflow.com/...
+Save this blog post: https://example.com/post
+```
+
+Result: Permanent, searchable copies with full metadata.
+
+### Use Case 3: Documenting Generated Solutions
+
+Preserve Claude's generated work:
+
+```
+[After Claude generates code or solutions]
+Save that database migration script
+Document the architecture you designed
+Save your explanation of the algorithm
+```
+
+Result: Well-documented, searchable reference materials.
+
+### Use Case 4: Code Library
+
+Build a searchable code snippet library:
+
+```
+Save this utility function: [paste code]
+Save this configuration: [paste config]
+Document this pattern we just created
+```
+
+Result: Organized code reference with documentation.
+
+### Use Case 5: Learning Journal
+
+Document your learning conversations:
+
+```
+Save our discussion about React hooks
+Document this debugging session
+Save this Q&A about SQL optimization
+```
+
+Result: Searchable learning archive with key insights extracted.
+
+### Use Case 6: Research Paper Collection
+
+Convert academic papers:
 
 ```
 Process this research paper: ~/Papers/ml-research.pdf
@@ -139,7 +268,7 @@ Process this research paper: ~/Papers/ml-research.pdf
 
 Result: Papers with abstracts, keywords, and citations properly extracted.
 
-### Use Case 3: Converting Legacy Documents
+### Use Case 7: Converting Legacy Documents
 
 Modernize old documents:
 
@@ -149,15 +278,25 @@ Process this scanned document image: ~/Archives/old-manual.jpg
 
 Result: OCR-like text extraction with visual descriptions.
 
-### Use Case 4: Data Documentation
+### Use Case 8: Multi-Source Documentation Projects
 
-Document your datasets:
+Combine content from everywhere:
 
 ```
-Process this CSV and explain its structure: ~/Data/customer-data.csv
+# From files
+Process ~/docs/spec.pdf
+
+# From web
+Save https://competitor.com/feature-docs
+
+# From conversations
+Save our brainstorming session
+
+# From generated content
+Save the implementation plan you created
 ```
 
-Result: Data dictionary with column descriptions and statistics.
+Result: Comprehensive documentation from diverse sources.
 
 ## Tips for Best Results
 
