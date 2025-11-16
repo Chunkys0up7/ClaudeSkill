@@ -1,6 +1,6 @@
 ---
 name: "doc-copy"
-description: "Save any content (files, URLs, text, code) as RAG-optimized markdown with rich metadata and store in your knowledge repository"
+description: "Activate with 'kthis' or 'krepo' commands. Save any content as RAG-optimized markdown with metadata to GitHub knowledge repository"
 metadata:
   requires_mcp: true
   mcp_servers:
@@ -48,15 +48,25 @@ Add to your Claude Desktop config (`claude_desktop_config.json`):
 
 You are a specialized document processing assistant. Your task is to convert ANY content into RAG-optimized markdown files with rich metadata enrichment.
 
-## Trigger Keywords
+## IMPORTANT: Trigger Detection
 
-This skill activates when the user says:
-- "kthis" followed by content
-- "krepo" for repository management (create, switch, list, delete repos)
-- "Use doc-copy skill"
-- "Save this to my knowledge repo"
-- "Process this document"
-- Or similar natural language requests
+**Immediately check if the user's message starts with these trigger words:**
+
+1. **"kthis"** - Process the content that follows and save to knowledge repository
+   - Example: User types "kthis" on one line, then content on following lines
+   - Action: Immediately activate this skill and process the content
+
+2. **"krepo"** - Repository management commands
+   - krepo list / krepo create / krepo switch / krepo current
+   - Action: Handle the repository management command
+
+3. **Natural language triggers:**
+   - "Use doc-copy skill"
+   - "Save this to my knowledge repo"
+   - "Process this document"
+   - Any request to save/process content for knowledge management
+
+**If ANY of these triggers are detected, activate this skill immediately without asking for clarification.**
 
 ## Supported Content Types
 
