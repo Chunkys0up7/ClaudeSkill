@@ -74,40 +74,43 @@ This skill processes ALL types of content:
 
 When a user provides ANY content (file, pasted text, URL, generated content), follow these steps:
 
-### 0. Determine Target Repository
+### 0. Initial Setup & Repository Detection
+
+**FIRST TIME USERS:**
+
+When the user first uses this skill, ask them:
+1. **GitHub Repository**: "What GitHub repository should I save to?" (e.g., "Chunkys0up7/ClaudeSkill")
+2. **Repository Preference**: "Should I save to the default 'docs/imported' folder, or would you like to create custom knowledge repositories?"
+
+Store this information for the session.
 
 **Repository Management ("krepo" commands):**
 
 When user says "krepo [command]", handle repository management:
 
 **krepo list** - List all knowledge repositories:
-- Use MCP `get_file_contents` to read `.claude/krepos.json`
+- Try to read `.claude/krepos.json` from GitHub using connector tools
+- If file doesn't exist, show only default repository
 - Display all repositories with active indicator
-- Show name, path, description, created date
 
 **krepo create [name] [description]** - Create new repository:
-- Use MCP `get_file_contents` to read current config
-- Add new repo to config with path `krepos/{name}/docs/imported`
-- Use MCP `create_or_update_file` to save updated config
-- Create directory structure in GitHub repo
+- Add new repo configuration with path `krepos/{name}/docs/imported`
+- Create/update `.claude/krepos.json` in GitHub
 - Confirm creation to user
 
 **krepo switch [name]** - Switch active repository:
-- Update "active" field in config
-- Use MCP `create_or_update_file` to save
+- Update active repository for this session
+- Update `.claude/krepos.json` in GitHub if possible
 - Confirm switch to user
 
 **krepo current** - Show current active repository:
-- Read config and display active repo details
-
-**krepo delete [name]** - Delete repository (ask for confirmation):
-- Remove from config
-- Optionally delete files (ask user first)
+- Display active repo details (default if not set)
 
 **For document processing:**
-- Read `.claude/krepos.json` using MCP `get_file_contents`
+- Try to read `.claude/krepos.json` from GitHub
 - Use the "active" repository's path as base directory
-- Default to `docs/imported` if config doesn't exist
+- Default to `docs/imported` if config doesn't exist or can't be read
+- All paths are relative to the GitHub repository root
 
 ### 1. Content Ingestion
 
@@ -374,74 +377,108 @@ docs/
   - If active repo is "default": `docs/imported/articles/2025-11-16-title.md`
   - If active repo is "Cam": `krepos/Cam/docs/imported/articles/2025-11-16-title.md`
 
-### 6. GitHub Integration via MCP
+### 6. GitHub Integration
 
-**Using GitHub MCP Server (Recommended):**
+**IMPORTANT: This skill works in claude.ai with GitHub Connector enabled.**
 
-If GitHub MCP server is available, use these MCP tools:
+**Before attempting to save files:**
+1. **Ask the user** for their GitHub repository name (e.g., "username/ClaudeSkill")
+2. **Detect environment**: Check if you have access to GitHub tools
+3. **Use the appropriate method** based on available tools
 
-1. **Create or update file** using `create_or_update_file`:
-   - repository: Your repo (e.g., "username/ClaudeSkill")
-   - path: `docs/imported/{doc_type}/{filename}.md`
-   - content: The generated markdown content
-   - message: Descriptive commit message
-   - branch: Current branch name
+**Method 1: GitHub Connector (claude.ai)**
 
-   Example commit message:
-   ```
-   Add processed document: {title}
+If you have access to GitHub connector tools, use them to create files:
+- Tool: `github_create_or_update_file` or similar GitHub connector tool
+- Repository: User's repo (e.g., "Chunkys0up7/ClaudeSkill")
+- Path: `docs/imported/{doc_type}/{filename}.md`
+- Content: The generated markdown
+- Commit message: Descriptive message
 
-   - Source: {source_type}
-   - Type: {doc_type}
-   - Processed: {date}
-   - Keywords: {top 3-5 keywords}
-   ```
+Example commit message:
+```
+Add processed document: {title}
 
-2. **Verify commit** using `get_file_contents` to confirm the file was created
+- Source: {source_type}
+- Type: {doc_type}
+- Processed: {date}
+```
 
-3. **Optional: Create pull request** if working on a feature branch
+**Method 2: Manual Save (Fallback)**
 
-**Fallback (if MCP not available):**
-- Provide the user with the markdown content in a code block
-- Suggest manual git commands:
-  ```bash
-  # Save the markdown to docs/imported/{doc_type}/{filename}.md
-  git add docs/imported/{doc_type}/{filename}.md
-  git commit -m "Add processed document: {title}"
-  git push
-  ```
+If GitHub tools are not available, provide the user with:
+1. The complete markdown file in a code block
+2. The suggested filename
+3. Instructions to manually save it to their repository
+
+**DO NOT:**
+- ❌ Try to write to local file paths (like `/home/claude/docs/...`)
+- ❌ Use bash `git` commands directly
+- ❌ Assume file system access exists
+
+**DO:**
+- ✅ Ask user for repository name first
+- ✅ Use GitHub connector/API tools if available
+- ✅ Provide formatted markdown for manual save if tools unavailable
+- ✅ Give clear file path and commit message suggestions
 
 ### 7. Completion Report
 
-After processing, provide the user with:
-- **✅ MCP Status**: Whether GitHub MCP was used or manual fallback
-- **📁 Active repository**: Which knowledge repo was used (e.g., "Saved to 'Cam' repository")
-- **📄 File location**: Full path (e.g., `docs/imported/articles/2025-11-16-title.md`)
+**IF GitHub tools were available and file was saved:**
+
+Provide the user with:
+- **✅ Status**: "Successfully processed and saved to GitHub!"
+- **📁 Repository**: Which GitHub repo was used (e.g., "Chunkys0up7/ClaudeSkill")
+- **📁 Knowledge repo**: Which knowledge folder (e.g., "default" or "Cam")
+- **📄 File path**: Relative path in repo (e.g., `docs/imported/articles/2025-11-16-title.md`)
+- **🔗 GitHub link**: Direct link to view the file
 - **🔑 Metadata summary**: Key topics, keywords, document type, audience level
 - **📊 Statistics**: Word count, has_code, has_tables, has_images
-- **🔗 GitHub link**: Direct link to the file on GitHub (if MCP used)
-- **💡 Suggestions**: Related documents or further processing recommendations
+- **💡 Suggestions**: Related documents or further processing
 
-**Example Report:**
+**IF GitHub tools were NOT available (manual save needed):**
+
+Provide the user with:
+- **📋 Status**: "Document processed! Manual save required."
+- The complete markdown file in a code block
+- **📄 Suggested filename**: `docs/imported/{doc_type}/{filename}.md`
+- **📦 Suggested commit message**
+- **📝 Instructions**: How to save it to their repository
+
+**Example Success Report:**
 ```
 ✅ Successfully processed and saved to GitHub!
 
-📁 Repository: default
+📁 Repository: Chunkys0up7/ClaudeSkill
+📁 Knowledge repo: default
 📄 File: docs/imported/articles/2025-11-16-machine-learning-basics.md
-🔗 GitHub: https://github.com/username/ClaudeSkill/blob/main/docs/imported/articles/2025-11-16-machine-learning-basics.md
+🔗 GitHub: https://github.com/Chunkys0up7/ClaudeSkill/blob/main/docs/imported/articles/2025-11-16-machine-learning-basics.md
 
 🔑 Metadata:
    - Type: article
    - Topics: machine learning, neural networks, AI
    - Keywords: ML, training, models, algorithms
    - Audience: intermediate
-   - Has code: Yes
 
-📊 Stats: 1,245 words, 3 code blocks, 2 tables
+📊 Stats: 245 words
 
 💡 Suggestions:
-   - Add related: "Deep Learning Fundamentals"
-   - Consider creating a tutorial series
+   - Consider adding: "Deep Learning Fundamentals"
+   - Related topics to explore: Neural Networks, Supervised Learning
+```
+
+**Example Manual Save Report:**
+```
+📋 Document processed! Ready for manual save.
+
+Here's your RAG-optimized markdown file:
+
+[markdown file in code block]
+
+📄 Save as: docs/imported/articles/2025-11-16-machine-learning-basics.md
+📦 Commit message: "Add processed document: Machine Learning Basics"
+
+Please copy the markdown above and commit it to your repository.
 ```
 
 ## RAG Optimization Best Practices
