@@ -1,5 +1,5 @@
 ---
-name: "Doc Copy"
+name: "doc-copy"
 description: "Save any content (files, URLs, text, code) as RAG-optimized markdown with rich metadata and store in your knowledge repository"
 ---
 
