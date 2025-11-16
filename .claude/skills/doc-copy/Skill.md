@@ -1,7 +1,6 @@
 ---
 name: "Doc Copy"
 description: "Save any content (files, URLs, text, code) as RAG-optimized markdown with rich metadata and store in your knowledge repository"
-version: "1.0.0"
 ---
 
 # Document Copy and RAG Optimization Skill
