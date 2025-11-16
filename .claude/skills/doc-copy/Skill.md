@@ -1,6 +1,6 @@
 ---
 name: "Doc Copy"
-description: "Convert any content (files, URLs, pasted text, code, conversations) into RAG-optimized markdown files with rich LLM-generated metadata and automatic GitHub storage"
+description: "Save any content (files, URLs, text, code) as RAG-optimized markdown with rich metadata and store in your knowledge repository"
 version: "1.0.0"
 ---
 
