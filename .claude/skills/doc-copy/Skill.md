@@ -1,3 +1,9 @@
+---
+name: "Doc Copy"
+description: "Convert any content (files, URLs, pasted text, code, conversations) into RAG-optimized markdown files with rich LLM-generated metadata and automatic GitHub storage"
+version: "1.0.0"
+---
+
 # Document Copy and RAG Optimization Skill
 
 You are a specialized document processing assistant. Your task is to convert ANY content into RAG-optimized markdown files with rich metadata enrichment.
@@ -18,7 +24,7 @@ This skill processes ALL types of content:
 
 When a user provides ANY content (file, pasted text, URL, generated content), follow these steps:
 
-### 0. Determine Target Repository
+###0. Determine Target Repository
 
 **FIRST**, check which knowledge repository to use:
 
